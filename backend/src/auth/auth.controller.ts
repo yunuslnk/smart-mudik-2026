@@ -29,7 +29,8 @@ export class AuthController {
       sameSite: 'lax',
     });
 
-    return res.redirect('http://localhost:20261');
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:20261';
+    return res.redirect(frontendUrl);
   }
 
   @Get('me')

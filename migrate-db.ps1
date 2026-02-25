@@ -34,9 +34,14 @@ if ($VpsUser -and $VpsIp) {
 
     # 3. Restore to Docker Container on VPS
     Write-Host "[3/3] Restoring to Docker container on VPS..." -ForegroundColor Yellow
-    ssh "${VpsUser}@${VpsIp}" "docker exec -i data-db-1 psql -U postgres -d $DB_NAME < ~/data/backup_db.sql"
+    # Note: Container name is usually projectname-db-1
+    ssh "${VpsUser}@${VpsIp}" "docker exec -i smart-mudik-2026-db-1 psql -U postgres -d $DB_NAME < ~/data/backup_db.sql"
     
-    Write-Host "SUCCESS! Database migrated to VPS." -ForegroundColor Green
+    # 4. Run Prisma Migrate Deploy
+    Write-Host "[BONUS] Running Prisma Migrate Deploy on VPS..." -ForegroundColor Cyan
+    ssh "${VpsUser}@${VpsIp}" "docker exec smart-mudik-2026-backend-1 npx prisma migrate deploy"
+
+    Write-Host "SUCCESS! Database and Schema migrated to VPS." -ForegroundColor Green
 }
 else {
     Write-Host "[SKIP] VPS info not provided. Backup saved to $LOCAL_BACKUP_PATH" -ForegroundColor Yellow
