@@ -8,14 +8,18 @@ import axios from 'axios'
 vi.mock('axios')
 
 describe('Dashboard Component', () => {
-    it('renders progress summary header', () => {
-        // Mock successful API response
-        (axios.get as any).mockResolvedValue({
-            data: { data: [], total: 0, totalPages: 1 }
-        })
+    it('renders progress summary header', async () => {
+        // Mock API responses for different endpoints
+        (axios.get as any).mockImplementation((url: string) => {
+            if (url.includes('/api/mudik/ranking')) return Promise.resolve({ data: [] });
+            if (url.includes('/api/mudik/stats/vehicles')) return Promise.resolve({ data: [] });
+            if (url.includes('/api/mudik/stats/timeline')) return Promise.resolve({ data: [] });
+            if (url.includes('/api/mudik/public')) return Promise.resolve({ data: { data: [], total: 0 } });
+            return Promise.resolve({ data: [] });
+        });
 
         render(<Dashboard />)
 
-        expect(screen.getByText(/Pusat Analisis Mudik 2026/i)).toBeInTheDocument()
+        expect(await screen.findByText(/Pusat Analisis Mudik 2026/i)).toBeInTheDocument()
     })
 })
