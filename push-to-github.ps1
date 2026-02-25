@@ -12,7 +12,7 @@ Write-Host "--- Starting Automation Flow ---" -ForegroundColor Cyan
 
 # 0. Sync Files
 Write-Host "[0/4] Staging all files..." -ForegroundColor Yellow
-git add .
+git add -A
 git add .github/*
 
 # 1. Build Backend

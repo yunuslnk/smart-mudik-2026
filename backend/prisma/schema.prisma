@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String   @id @default(uuid())
+  googleId   String   @unique
+  email      String   @unique
+  name       String
+  role       Role     @default(USER)
+  createdAt  DateTime @default(now())
+  mudikEntry MudikEntry?
+  donations  Donation[]
+}
+
+model MudikEntry {
+  id               String   @id @default(uuid())
+  userId           String   @unique
+  user             User     @relation(fields: [userId], references: [id])
+  tanggal          DateTime
+  jam              String
+  provinsiAsalId   String
+  provinsiAsal     Province @relation("AsalProvince", fields: [provinsiAsalId], references: [id])
+  kotaAsalId       String
+  kotaAsal         Regency  @relation("AsalRegency", fields: [kotaAsalId], references: [id])
+  provinsiTujuanId String
+  provinsiTujuan   Province @relation("TujuanProvince", fields: [provinsiTujuanId], references: [id])
+  kotaTujuanId     String
+  kotaTujuan       Regency  @relation("TujuanRegency", fields: [kotaTujuanId], references: [id])
+  kendaraan        String
+  status           Status   @default(BERANGKAT)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([status])
+}
+
+model Province {
+  id           String       @id
+  name         String
+  regencies    Regency[]
+  mudiksAsal   MudikEntry[] @relation("AsalProvince")
+  mudiksTujuan MudikEntry[] @relation("TujuanProvince")
+}
+
+model Regency {
+  id         String       @id
+  provinceId String
+  province   Province     @relation(fields: [provinceId], references: [id])
+  name       String
+  mudiksAsal    MudikEntry[] @relation("AsalRegency")
+  mudiksTujuan  MudikEntry[] @relation("TujuanRegency")
+}
+
+model Donation {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  amount    Int
+  status    String   @default("PENDING")
+  qrContent String
+  createdAt DateTime @default(now())
+}
+
+enum Status {
+  BERANGKAT
+  SAMPAI
+}
+
+enum Role {
+  USER
+  ADMIN
+}
