@@ -16,10 +16,11 @@ Write-Host "--- Starting Database Migration ---" -ForegroundColor Cyan
 
 # 1. Dump Local Database
 Write-Host "[1/3] Dumping local database..." -ForegroundColor Yellow
-# Using pg_dump (Assumes PostgreSQL installed locally)
+Write-Host "Please enter your local PostgreSQL password when prompted." -ForegroundColor Gray
+# Use -W to force password prompt if not in env
 try {
-    # If using local postgres directly
-    pg_dump -U postgres -d $DB_NAME -f $LOCAL_BACKUP_PATH
+    # Using pg_dump
+    pg_dump -U postgres -d $DB_NAME -h localhost -p 5432 -f $LOCAL_BACKUP_PATH
 }
 catch {
     Write-Host "Failed to dump database. Make sure pg_dump is in your PATH." -ForegroundColor Red
