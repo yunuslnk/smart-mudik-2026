@@ -1,0 +1,39 @@
+name: Smart Mudik CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Use Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+
+    - name: Install & Build Backend
+      run: |
+        cd backend
+        npm install
+        npm run build
+      env:
+        DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+    - name: Install & Build Frontend
+      run: |
+        cd frontend
+        npm install
+        npm run build
+
+    - name: Run Frontend Tests
+      run: |
+        cd frontend
+        npm run test
