@@ -7,6 +7,8 @@ COPY . .
 # Set environment variables for Prisma
 ENV PRISMA_CLI_QUERY_ENGINE_TYPE=binary
 ENV PRISMA_CLIENT_ENGINE_TYPE=binary
+# Dummy DATABASE_URL to satisfy Prisma validation during build
+ENV DATABASE_URL="postgresql://user:pass@localhost:5432/db?schema=public"
 RUN npx prisma generate --schema=./prisma/schema.prisma
 RUN npm run build
 
