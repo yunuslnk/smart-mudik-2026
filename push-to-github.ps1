@@ -2,7 +2,7 @@
 # Usage: ./push-to-github.ps1 "Your commit message"
 
 param (
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory = $true)]
     [string]$Message
 )
 
@@ -30,8 +30,10 @@ git commit -m "$Message"
 # 4. Push
 Write-Host "[4/4] Pushing to GitHub..." -ForegroundColor Yellow
 try {
-    git push
+    # Try pushing and setting upstream to main
+    git push -u origin main
     Write-Host "DONE! Code successfully built and pushed." -ForegroundColor Green
-} catch {
+}
+catch {
     Write-Host "PUSH FAILED. Make sure you have set up a remote origin (git remote add origin ...)" -ForegroundColor Red
 }
