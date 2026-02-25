@@ -1,11 +1,12 @@
 # Step 1: Build
-FROM node:20-alpine AS builder
-# Install openssl for Prisma engines
-RUN apk add --no-cache openssl
+FROM node:20 AS builder
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
+# Set environment variables for Prisma
+ENV PRISMA_CLI_QUERY_ENGINE_TYPE=binary
+ENV PRISMA_CLIENT_ENGINE_TYPE=binary
 RUN npx prisma generate --schema=./prisma/schema.prisma
 RUN npm run build
 
