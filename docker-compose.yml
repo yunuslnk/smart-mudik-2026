@@ -1,6 +1,6 @@
 services:
   backend:
-    build: ./backend
+    image: ghcr.io/yunuslnk/smart-mudik-2026-backend:main
     ports:
       - "20262:20262"
     environment:
@@ -9,7 +9,7 @@ services:
     restart: always
 
   frontend:
-    build: ./frontend
+    image: ghcr.io/yunuslnk/smart-mudik-2026-frontend:main
     ports:
       - "20261:80"
     restart: always
