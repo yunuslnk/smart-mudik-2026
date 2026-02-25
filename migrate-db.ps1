@@ -1,0 +1,42 @@
+# Smart Mudik 2026 - Database Migration Script
+# Usage: ./migrate-db.ps1 [VPS_USER] [VPS_IP]
+
+param (
+    [string]$VpsUser,
+    [string]$VpsIp
+)
+
+$ErrorActionPreference = "Stop"
+
+# Database Configuration (From your .env)
+$DB_NAME = "mudik_db"
+$LOCAL_BACKUP_PATH = "./backup_db.sql"
+
+Write-Host "--- Starting Database Migration ---" -ForegroundColor Cyan
+
+# 1. Dump Local Database
+Write-Host "[1/3] Dumping local database..." -ForegroundColor Yellow
+# Using pg_dump (Assumes PostgreSQL installed locally)
+try {
+    # If using local postgres directly
+    pg_dump -U postgres -d $DB_NAME -f $LOCAL_BACKUP_PATH
+}
+catch {
+    Write-Host "Failed to dump database. Make sure pg_dump is in your PATH." -ForegroundColor Red
+    return
+}
+
+# 2. Transfer to VPS
+if ($VpsUser -and $VpsIp) {
+    Write-Host "[2/3] Transferring backup to VPS ($VpsIp)..." -ForegroundColor Yellow
+    scp $LOCAL_BACKUP_PATH "${VpsUser}@${VpsIp}:~/data/backup_db.sql"
+
+    # 3. Restore to Docker Container on VPS
+    Write-Host "[3/3] Restoring to Docker container on VPS..." -ForegroundColor Yellow
+    ssh "${VpsUser}@${VpsIp}" "docker exec -i data-db-1 psql -U postgres -d $DB_NAME < ~/data/backup_db.sql"
+    
+    Write-Host "SUCCESS! Database migrated to VPS." -ForegroundColor Green
+}
+else {
+    Write-Host "[SKIP] VPS info not provided. Backup saved to $LOCAL_BACKUP_PATH" -ForegroundColor Yellow
+}

@@ -1,10 +1,24 @@
 services:
+  db:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=${DB_USER:-postgres}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-password}
+      - POSTGRES_DB=${DB_NAME:-mudik_db}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
   backend:
     image: ghcr.io/yunuslnk/smart-mudik-2026-backend:main
+    depends_on:
+      - db
     ports:
       - "20262:20262"
     environment:
-      - DATABASE_URL=${DATABASE_URL}
+      - DATABASE_URL=postgresql://${DB_USER:-postgres}:${DB_PASSWORD:-password}@db:5432/${DB_NAME:-mudik_db}?schema=public
       - JWT_SECRET=${JWT_SECRET}
     restart: always
 
@@ -13,3 +27,6 @@ services:
     ports:
       - "20261:80"
     restart: always
+
+volumes:
+  postgres_data:
