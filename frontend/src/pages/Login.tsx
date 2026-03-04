@@ -7,11 +7,11 @@ export const Login: React.FC = () => {
     const { login } = useAuth()
 
     return (
-        <div className="login-container">
-            <div className="login-card glass">
+        <div className="login-container animate-fade-in">
+            <div className="login-card">
                 <div className="login-logo">
-                    <Grid className="text-primary" size={48} />
-                    <h1>Seikatsu<span className="text-muted">Mudik</span></h1>
+                    <Grid className="accent" size={48} color="var(--accent)" />
+                    <h1>smart mudik 2026</h1>
                 </div>
 
                 <div className="login-content">

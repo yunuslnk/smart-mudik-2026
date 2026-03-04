@@ -2,231 +2,226 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import {
     BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip,
-    AreaChart, Area, PieChart, Pie, Cell, CartesianGrid
+    AreaChart, Area, CartesianGrid, Cell
 } from 'recharts'
-import { ArrowUpRight, Search, ChevronLeft, ChevronRight, TrendingUp, Car, MapPin } from 'lucide-react'
+import { Plus, Heart, Sun, Moon, Home, ChevronRight, Edit3 } from 'lucide-react'
+import { useAuth } from '../services/AuthContext'
+import { useTheme } from '../services/ThemeContext'
+import { useNavigate } from 'react-router-dom'
 import './Dashboard.css'
 
-const COLORS = ['#2563eb', '#3b82f6', '#60a5fa', '#93c5fd', '#bfdbfe', '#dbeafe'];
-
 export const Dashboard: React.FC = () => {
-    const [mudikData, setMudikData] = useState<any[]>([])
-    const [search, setSearch] = useState('')
-    const [stats, setStats] = useState({ total: 0 })
-    const [page, setPage] = useState(1)
-    const [totalPages, setTotalPages] = useState(1)
+    const { user, login } = useAuth()
+    const { theme, toggleTheme } = useTheme()
+    const navigate = useNavigate()
 
-    const [rankData, setRankData] = useState<any[]>([])
-    const [vehicleData, setVehicleData] = useState<any[]>([])
-    const [timelineData, setTimelineData] = useState<any[]>([])
+    const [activeChart, setActiveChart] = useState(0)
+    const [mudikFlow, setMudikFlow] = useState<any[]>([])
+    const [returnFlow, setReturnFlow] = useState<any[]>([])
+    const [topDestinations, setTopDestinations] = useState<any[]>([])
+    const [myEntry, setMyEntry] = useState<any>(null)
+    const [greeting, setGreeting] = useState('')
 
-    // Fetch analytical data once
     useEffect(() => {
-        const fetchAnalytics = async () => {
+        const fetchAll = async () => {
             try {
-                const [rankRes, vRes, tRes] = await Promise.all([
-                    axios.get('/api/mudik/ranking'),
-                    axios.get('/api/mudik/stats/vehicles'),
-                    axios.get('/api/mudik/stats/timeline')
+                const [flow, retFlow, topDest, me] = await Promise.all([
+                    axios.get('/api/mudik/stats/flow'),
+                    axios.get('/api/mudik/stats/return-flow'),
+                    axios.get('/api/mudik/stats/top-destinations'),
+                    user ? axios.get('/api/mudik/me') : Promise.resolve({ data: null })
                 ])
 
-                // Format ranking: take regency name and count
-                setRankData(rankRes.data.map((item: any) => ({
-                    name: item.name,
-                    count: item._count.mudiksTujuan
-                })))
+                // Match the backend response structure directly
+                const flowData = flow.data || []
+                const retFlowData = retFlow.data || []
+                const destData = topDest.data || []
 
-                // Format vehicle distribution
-                setVehicleData(vRes.data.map((item: any) => ({
-                    name: item.kendaraan,
-                    value: item._count.kendaraan
+                setMudikFlow(flowData.map((d: any) => ({
+                    date: new Date(d.tanggal).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' }),
+                    count: d._count?.id || 0
                 })))
-
-                // Format timeline: ensure dates are readable
-                setTimelineData(tRes.data.map((item: any) => ({
-                    date: new Date(item.tanggal).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' }),
-                    count: item._count.id
+                setReturnFlow(retFlowData.map((d: any) => ({
+                    date: new Date(d.tanggal).toLocaleDateString('id-ID', { day: '2-digit', month: 'short' }),
+                    count: d._count?.id || 0
                 })))
-
+                setTopDestinations(destData.map((d: any) => ({
+                    name: d.name,
+                    count: d.count
+                })))
+                setMyEntry(me.data)
             } catch (err) {
-                console.error('Failed to fetch analytics', err)
+                console.error('Failed to fetch dashboard data', err)
             }
         }
-        fetchAnalytics()
-    }, [])
+        fetchAll()
+    }, [user])
 
-    // Fetch paginated table data
     useEffect(() => {
-        fetchPaginatedData()
-    }, [page, search])
+        const updateGreeting = () => {
+            const hour = new Date().getHours()
+            if (!user) {
+                setGreeting('Selamat Pagi')
+                return
+            }
 
-    const fetchPaginatedData = async () => {
-        try {
-            const res = await axios.get('/api/mudik/public', {
-                params: { search, page, limit: 30 }
-            })
-            setMudikData(res.data.data)
-            setStats({ total: res.data.total })
-            setTotalPages(res.data.totalPages)
-        } catch (err) {
-            console.error('Failed to fetch paginated data', err)
+            if (hour >= 5 && hour < 11) setGreeting('Selamat Pagi')
+            else if (hour >= 11 && hour < 15) setGreeting('Selamat Siang')
+            else if (hour >= 15 && hour < 18) setGreeting('Selamat Sore')
+            else setGreeting('Selamat Malam')
+        }
+        updateGreeting()
+        const interval = setInterval(updateGreeting, 60000)
+        return () => clearInterval(interval)
+    }, [user])
+
+    const charts = [
+        {
+            title: 'Grafik Pemudik',
+            data: mudikFlow,
+            type: 'area',
+            color: '#3b82f6'
+        },
+        {
+            title: 'Grafik Arus Balik',
+            data: returnFlow,
+            type: 'area',
+            color: '#8b5cf6'
+        },
+        {
+            title: 'Tujuan Kota 7 Terbanyak',
+            data: topDestinations,
+            type: 'bar',
+            color: '#3b82f6'
+        }
+    ]
+
+    const handleAddData = () => {
+        if (!user) {
+            login()
+        } else {
+            navigate('/daftar')
         }
     }
 
     return (
-        <div className="dashboard-grid">
-            <div className="main-col">
-                <header className="page-header">
-                    <div>
-                        <span className="breadcrumb">Dashboard</span>
-                        <h1>Pusat Analisis Mudik 2026</h1>
-                    </div>
+        <div className="dashboard-container premium-gradient">
+            <div className="dashboard-inner animate-fade-in">
+                {/* Header Section */}
+                <header className="dashboard-header text-center">
+                    <h1 className="app-title">smart mudik 2026</h1>
+                    <p className="greeting">
+                        {greeting}{user ? `, ${user.email}` : ''}
+                    </p>
                 </header>
 
-                <div className="top-stats-row">
-                    <section className="stats-card card">
-                        <div className="stats-header">
-                            <span className="stats-label">Total Pemudik Terdaftar</span>
-                            <div className="trend positive">
-                                <ArrowUpRight size={16} />
-                                <span>Real-time</span>
-                            </div>
+                {/* Chart Carousel Section */}
+                <div className="chart-wrapper">
+                    <section className="chart-card bg-card shadow-lg">
+                        <div className="chart-header flex justify-between items-center">
+                            <h3>{charts[activeChart].title}</h3>
+                            <button className="btn-atur flex items-center gap-1">
+                                <Edit3 size={14} /> Atur
+                            </button>
                         </div>
-                        <h2 className="stats-value">{stats.total.toLocaleString('id-ID')}</h2>
-                        <p className="text-muted">Total data perjalanan yang masuk dalam sistem.</p>
-                    </section>
-                </div>
 
-                <div className="grid-2 mt-2">
-                    <section className="card">
-                        <h3>Tren Pendaftaran (Timeline)</h3>
-                        <div className="chart-container h-250">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <AreaChart data={timelineData}>
-                                    <defs>
-                                        <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
-                                            <stop offset="5%" stopColor="#2563eb" stopOpacity={0.1} />
-                                            <stop offset="95%" stopColor="#2563eb" stopOpacity={0} />
-                                        </linearGradient>
-                                    </defs>
-                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                                    <XAxis dataKey="date" fontSize={10} axisLine={false} tickLine={false} />
-                                    <YAxis hide />
-                                    <Tooltip />
-                                    <Area type="monotone" dataKey="count" stroke="#2563eb" fillOpacity={1} fill="url(#colorCount)" />
-                                </AreaChart>
+                        <div className="chart-content">
+                            <ResponsiveContainer width="100%" height={220}>
+                                {charts[activeChart].type === 'area' ? (
+                                    <AreaChart data={charts[activeChart].data}>
+                                        <defs>
+                                            <linearGradient id="gradientColor" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="5%" stopColor={charts[activeChart].color} stopOpacity={0.3} />
+                                                <stop offset="95%" stopColor={charts[activeChart].color} stopOpacity={0} />
+                                            </linearGradient>
+                                        </defs>
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} strokeOpacity={0.1} />
+                                        <XAxis dataKey={activeChart === 2 ? 'name' : 'date'} stroke="var(--text-secondary)" fontSize={12} tickLine={false} axisLine={false} />
+                                        <YAxis stroke="var(--text-secondary)" fontSize={12} tickLine={false} axisLine={false} />
+                                        <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: 'var(--shadow)' }} />
+                                        <Area
+                                            type="monotone"
+                                            dataKey={activeChart === 2 ? 'count' : 'count'}
+                                            stroke={charts[activeChart].color}
+                                            strokeWidth={3}
+                                            fillOpacity={1}
+                                            fill="url(#gradientColor)"
+                                        />
+                                    </AreaChart>
+                                ) : (
+                                    <BarChart data={charts[activeChart].data}>
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} strokeOpacity={0.1} />
+                                        <XAxis dataKey="name" stroke="var(--text-secondary)" fontSize={12} tickLine={false} axisLine={false} />
+                                        <YAxis stroke="var(--text-secondary)" fontSize={12} tickLine={false} axisLine={false} />
+                                        <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: 'var(--shadow)' }} />
+                                        <Bar dataKey="count" fill={charts[activeChart].color} radius={[6, 6, 0, 0]} />
+                                    </BarChart>
+                                )}
                             </ResponsiveContainer>
                         </div>
-                    </section>
 
-                    <section className="card">
-                        <h3>10 Kota Tujuan Terfavorit</h3>
-                        <div className="chart-container h-250">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <BarChart data={rankData} layout="vertical">
-                                    <XAxis type="number" hide />
-                                    <YAxis dataKey="name" type="category" width={80} fontSize={10} axisLine={false} tickLine={false} />
-                                    <Tooltip />
-                                    <Bar dataKey="count" fill="#2563eb" radius={[0, 4, 4, 0]} />
-                                </BarChart>
-                            </ResponsiveContainer>
-                        </div>
-                    </section>
-                </div>
-
-                <div className="grid-2 mt-2">
-                    <section className="card">
-                        <h3>Distribusi Kendaraan</h3>
-                        <div className="chart-container h-250 relative">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <PieChart>
-                                    <Pie
-                                        data={vehicleData}
-                                        innerRadius={60}
-                                        outerRadius={80}
-                                        paddingAngle={5}
-                                        dataKey="value"
-                                    >
-                                        {vehicleData.map((entry, index) => (
-                                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                        ))}
-                                    </Pie>
-                                    <Tooltip />
-                                </PieChart>
-                            </ResponsiveContainer>
-                        </div>
-                        <div className="legend-grid mt-1">
-                            {vehicleData.map((item, i) => (
-                                <div key={item.name} className="legend-item-small">
-                                    <span className="dot" style={{ background: COLORS[i % COLORS.length] }}></span>
-                                    <span>{item.name}</span>
-                                </div>
+                        {/* Carousel Indicators */}
+                        <div className="carousel-indicators flex justify-center gap-2 mt-4">
+                            {charts.map((_, i) => (
+                                <button
+                                    key={i}
+                                    className={`dot ${activeChart === i ? 'active' : ''}`}
+                                    onClick={() => setActiveChart(i)}
+                                />
                             ))}
                         </div>
                     </section>
-
-                    <section className="card search-section">
-                        <h3>Pencarian & Filter</h3>
-                        <div className="search-box-dashboard">
-                            <Search size={20} className="text-muted" />
-                            <input
-                                type="text"
-                                placeholder="Cari Kota atau Provinsi..."
-                                value={search}
-                                onChange={(e) => { setSearch(e.target.value); setPage(1) }}
-                            />
-                        </div>
-                        <p className="mt-1 text-sm text-muted">Mencari di {stats.total} record data per {new Date().toLocaleDateString()}.</p>
-                    </section>
                 </div>
 
-                <section className="card mt-2">
-                    <div className="flex-row">
-                        <h3>Data Perjalanan Terbaru (30 record/hal)</h3>
-                        <div className="pagination-ctrls">
-                            <button
-                                className="btn-icon"
-                                disabled={page === 1}
-                                onClick={() => setPage(p => p - 1)}
-                            >
-                                <ChevronLeft size={20} />
-                            </button>
-                            <span className="page-indicator">Hal. {page} dari {totalPages}</span>
-                            <button
-                                className="btn-icon"
-                                disabled={page === totalPages}
-                                onClick={() => setPage(p => p + 1)}
-                            >
+                {/* Lower Content */}
+                <div className="dashboard-content-main">
+                    {/* Travel Status Card */}
+                    {user && myEntry ? (
+                        <div className="status-card glass-card flex items-center justify-between">
+                            <div className="status-info flex items-center gap-4">
+                                <div className="icon-box bg-accent">
+                                    <Home size={24} color="#fff" />
+                                </div>
+                                <div>
+                                    <h4>Tujuan kamu adalah {myEntry.kotaTujuan.name.toUpperCase()}</h4>
+                                    <p>Kamu dari {myEntry.kotaAsal.name.toUpperCase()}</p>
+                                    <p className="status-text">Status kamu {myEntry.status === 'BERANGKAT' ? 'masih dalam perjalanan' : 'sudah sampai'}</p>
+                                </div>
+                            </div>
+                            <button className="btn-next">
                                 <ChevronRight size={20} />
                             </button>
                         </div>
-                    </div>
+                    ) : (
+                        <div className="status-card glass-card flex items-center justify-center py-4">
+                            <p className="text-muted">Daftarkan mudikmu sekarang!</p>
+                        </div>
+                    )}
 
-                    <div className="mudik-table-wrapper">
-                        <table className="mudik-table">
-                            <thead>
-                                <tr>
-                                    <th>Asal</th>
-                                    <th>Tujuan</th>
-                                    <th>Kendaraan</th>
-                                    <th>Waktu</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {mudikData.map((item: any) => (
-                                    <tr key={item.id}>
-                                        <td>{item.kotaAsal.name}, {item.provinsiAsal.name}</td>
-                                        <td>{item.kotaTujuan.name}, {item.provinsiTujuan.name}</td>
-                                        <td><div className="tag-vehicle">{item.kendaraan}</div></td>
-                                        <td>{new Date(item.tanggal).toLocaleDateString('id-ID')} {item.jam}</td>
-                                        <td><span className={`status-badge ${item.status}`}>{item.status}</span></td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                    {/* Action Grid */}
+                    <div className="action-grid mt-6">
+                        <button className="action-item" onClick={handleAddData}>
+                            <div className="icon-circle bg-blue">
+                                <Plus size={28} />
+                            </div>
+                            <span>Tambah data</span>
+                        </button>
+
+                        <button className="action-item" onClick={() => navigate('/donasi')}>
+                            <div className="icon-circle bg-pink">
+                                <Heart size={28} />
+                            </div>
+                            <span>Donasi</span>
+                        </button>
+
+                        <button className="action-item" onClick={toggleTheme}>
+                            <div className="icon-circle bg-dark">
+                                {theme === 'light' ? <Moon size={28} /> : <Sun size={28} />}
+                            </div>
+                            <span>Tema {theme === 'light' ? 'gelap' : 'terang'}</span>
+                        </button>
                     </div>
-                </section>
+                </div>
             </div>
         </div>
     )

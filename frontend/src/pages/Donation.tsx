@@ -50,8 +50,8 @@ export const Donation: React.FC = () => {
     }
 
     return (
-        <div className="donation-container">
-            <div className="card">
+        <div className="donation-container animate-fade-in">
+            <div className="donation-card">
                 <header className="donation-header">
                     <h1>Donasi Mudik Aman</h1>
                     <p>Dukung fasilitas istirahat dan posko kesehatan di sepanjang rute mudik.</p>
@@ -69,14 +69,18 @@ export const Donation: React.FC = () => {
                             />
                             <div className="quick-amounts">
                                 {[10000, 25000, 50000, 100000].map(val => (
-                                    <button key={val} onClick={() => setAmount(val)} className="btn-chip">
+                                    <button
+                                        key={val}
+                                        onClick={() => setAmount(val)}
+                                        className={`btn-chip ${amount === val ? 'active' : ''}`}
+                                    >
                                         Rp {val.toLocaleString('id-ID')}
                                     </button>
                                 ))}
                             </div>
                         </div>
 
-                        <button onClick={handleDonate} className="btn-primary full-width" disabled={loading}>
+                        <button onClick={handleDonate} className="btn-submit full-width" disabled={loading}>
                             {loading ? 'Memproses...' : 'Lanjutkan ke Pembayaran'}
                             <ArrowRight size={18} />
                         </button>

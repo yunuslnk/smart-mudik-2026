@@ -9,34 +9,34 @@ datasource db {
 }
 
 model User {
-  id         String   @id @default(uuid())
-  googleId   String   @unique
-  email      String   @unique
+  id         String      @id @default(uuid())
+  googleId   String      @unique
+  email      String      @unique
   name       String
-  role       Role     @default(USER)
-  createdAt  DateTime @default(now())
-  mudikEntry MudikEntry?
+  role       Role        @default(USER)
+  createdAt  DateTime    @default(now())
   donations  Donation[]
+  mudikEntry MudikEntry?
 }
 
 model MudikEntry {
   id               String   @id @default(uuid())
   userId           String   @unique
-  user             User     @relation(fields: [userId], references: [id])
   tanggal          DateTime
   jam              String
   provinsiAsalId   String
-  provinsiAsal     Province @relation("AsalProvince", fields: [provinsiAsalId], references: [id])
   kotaAsalId       String
-  kotaAsal         Regency  @relation("AsalRegency", fields: [kotaAsalId], references: [id])
   provinsiTujuanId String
-  provinsiTujuan   Province @relation("TujuanProvince", fields: [provinsiTujuanId], references: [id])
   kotaTujuanId     String
-  kotaTujuan       Regency  @relation("TujuanRegency", fields: [kotaTujuanId], references: [id])
   kendaraan        String
   status           Status   @default(BERANGKAT)
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
+  kotaAsal         Regency  @relation("AsalRegency", fields: [kotaAsalId], references: [id])
+  kotaTujuan       Regency  @relation("TujuanRegency", fields: [kotaTujuanId], references: [id])
+  provinsiAsal     Province @relation("AsalProvince", fields: [provinsiAsalId], references: [id])
+  provinsiTujuan   Province @relation("TujuanProvince", fields: [provinsiTujuanId], references: [id])
+  user             User     @relation(fields: [userId], references: [id])
 
   @@index([status])
 }
@@ -44,28 +44,28 @@ model MudikEntry {
 model Province {
   id           String       @id
   name         String
-  regencies    Regency[]
   mudiksAsal   MudikEntry[] @relation("AsalProvince")
   mudiksTujuan MudikEntry[] @relation("TujuanProvince")
+  regencies    Regency[]
 }
 
 model Regency {
-  id         String       @id
-  provinceId String
-  province   Province     @relation(fields: [provinceId], references: [id])
-  name       String
-  mudiksAsal    MudikEntry[] @relation("AsalRegency")
-  mudiksTujuan  MudikEntry[] @relation("TujuanRegency")
+  id           String       @id
+  provinceId   String
+  name         String
+  mudiksAsal   MudikEntry[] @relation("AsalRegency")
+  mudiksTujuan MudikEntry[] @relation("TujuanRegency")
+  province     Province     @relation(fields: [provinceId], references: [id])
 }
 
 model Donation {
   id        String   @id @default(uuid())
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
   amount    Int
   status    String   @default("PENDING")
   qrContent String
   createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 enum Status {

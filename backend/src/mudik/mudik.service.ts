@@ -146,13 +146,44 @@ export class MudikService {
     return stats;
   }
 
-  async getProvinsiStats() {
-    return this.prisma.province.findMany({
-      include: {
-        _count: {
-          select: { mudiksTujuan: true }
-        }
-      }
+  async getStatsFlow() {
+    return this.prisma.mudikEntry.groupBy({
+      by: ['tanggal'],
+      _count: { id: true },
+      where: { status: 'BERANGKAT' },
+      orderBy: { tanggal: 'asc' },
     });
+  }
+
+  async getStatsReturnFlow() {
+    return this.prisma.mudikEntry.groupBy({
+      by: ['tanggal'],
+      _count: { id: true },
+      where: { status: 'BALIK' },
+      orderBy: { tanggal: 'asc' },
+    });
+  }
+
+  async getTop7Destinations() {
+    const counts = await this.prisma.mudikEntry.groupBy({
+      by: ['kotaTujuanId'],
+      _count: { id: true },
+      orderBy: { _count: { id: 'desc' } },
+      take: 7,
+    });
+
+    // Fetch names for labels
+    return Promise.all(
+      counts.map(async (item) => {
+        const city = await this.prisma.regency.findUnique({
+          where: { id: item.kotaTujuanId },
+          select: { name: true },
+        });
+        return {
+          name: city?.name || 'Unknown',
+          count: item._count.id,
+        };
+      }),
+    );
   }
 }

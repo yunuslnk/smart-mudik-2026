@@ -95,8 +95,8 @@ export const MudikForm: React.FC = () => {
     }
 
     return (
-        <div className="form-container">
-            <div className="card">
+        <div className="form-container animate-fade-in">
+            <div className="premium-form-card">
                 <header className="form-header">
                     <h1>Daftar Mudik 2026</h1>
                     <p>Isi formulir di bawah untuk mencatatkan perjalanan mudik Anda.</p>

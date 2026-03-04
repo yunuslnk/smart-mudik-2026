@@ -77,8 +77,18 @@ export class MudikController {
     return this.mudikService.getTimelineStats();
   }
 
-  @Get('stats/provinsi')
-  getProvinsiStats() {
-    return this.mudikService.getProvinsiStats();
+  @Get('stats/flow')
+  getStatsFlow() {
+    return this.mudikService.getStatsFlow();
+  }
+
+  @Get('stats/return-flow')
+  getStatsReturnFlow() {
+    return this.mudikService.getStatsReturnFlow();
+  }
+
+  @Get('stats/top-destinations')
+  getTopDestinations() {
+    return this.mudikService.getTop7Destinations();
   }
 }

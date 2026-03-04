@@ -47,13 +47,17 @@ function AppContent() {
     )
 }
 
+import { ThemeProvider } from './services/ThemeContext'
+
 function App() {
     return (
-        <AuthProvider>
-            <Router>
-                <AppContent />
-            </Router>
-        </AuthProvider>
+        <ThemeProvider>
+            <AuthProvider>
+                <Router>
+                    <AppContent />
+                </Router>
+            </AuthProvider>
+        </ThemeProvider>
     )
 }
 
