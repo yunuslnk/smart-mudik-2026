@@ -25,13 +25,14 @@ export class MudikController {
   @Put()
   @UseGuards(AuthGuard('jwt'))
   update(@Req() req, @Body() body) {
-    return this.mudikService.update(req.user.userId, body);
+    const { status, ...data } = body;
+    return this.mudikService.update(req.user.userId, status || 'BERANGKAT', data);
   }
 
   @Delete()
   @UseGuards(AuthGuard('jwt'))
-  delete(@Req() req) {
-    return this.mudikService.delete(req.user.userId);
+  delete(@Req() req, @Query('status') status: string) {
+    return this.mudikService.delete(req.user.userId, (status as any) || 'BERANGKAT');
   }
 
   @Post('arrived')
@@ -89,6 +90,11 @@ export class MudikController {
 
   @Get('stats/top-destinations')
   getTopDestinations() {
-    return this.mudikService.getTop7Destinations();
+    return this.mudikService.getTop10Destinations();
+  }
+
+  @Get('stats/total')
+  getTotalCount() {
+    return this.mudikService.getTotalCount();
   }
 }

@@ -6,12 +6,15 @@ export class MudikService {
   constructor(private prisma: PrismaService) { }
 
   async create(userId: string, data: any) {
-    const existing = await this.prisma.mudikEntry.findUnique({
-      where: { userId },
+    const existing = await this.prisma.mudikEntry.findFirst({
+      where: {
+        userId,
+        status: data.status || 'BERANGKAT'
+      },
     });
 
     if (existing) {
-      throw new BadRequestException('User already submitted mudik data');
+      throw new BadRequestException(`User already submitted ${data.status || 'BERANGKAT'} data`);
     }
 
     return this.prisma.mudikEntry.create({
@@ -28,9 +31,11 @@ export class MudikService {
     });
   }
 
-  async update(userId: string, data: any) {
+  async update(userId: string, status: any, data: any) {
     return this.prisma.mudikEntry.update({
-      where: { userId },
+      where: {
+        userId_status: { userId, status }
+      },
       data,
       include: {
         provinsiAsal: true,
@@ -41,21 +46,25 @@ export class MudikService {
     });
   }
 
-  async delete(userId: string) {
+  async delete(userId: string, status: any) {
     return this.prisma.mudikEntry.delete({
-      where: { userId },
+      where: {
+        userId_status: { userId, status }
+      },
     });
   }
 
   async markArrived(userId: string) {
     return this.prisma.mudikEntry.update({
-      where: { userId },
+      where: {
+        userId_status: { userId, status: 'BERANGKAT' }
+      },
       data: { status: 'SAMPAI' },
     });
   }
 
   async getMyEntry(userId: string) {
-    return this.prisma.mudikEntry.findUnique({
+    return this.prisma.mudikEntry.findMany({
       where: { userId },
       include: {
         provinsiAsal: true,
@@ -164,12 +173,12 @@ export class MudikService {
     });
   }
 
-  async getTop7Destinations() {
+  async getTop10Destinations() {
     const counts = await this.prisma.mudikEntry.groupBy({
       by: ['kotaTujuanId'],
       _count: { id: true },
       orderBy: { _count: { id: 'desc' } },
-      take: 7,
+      take: 10,
     });
 
     // Fetch names for labels
@@ -185,5 +194,9 @@ export class MudikService {
         };
       }),
     );
+  }
+
+  async getTotalCount() {
+    return this.prisma.mudikEntry.count();
   }
 }

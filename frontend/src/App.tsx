@@ -3,7 +3,7 @@ import { Layout } from './components/Layout'
 import { Dashboard } from './pages/Dashboard'
 import { Login } from './pages/Login'
 import { MudikForm } from './pages/MudikForm'
-import { Donation } from './pages/Donation'
+import { Donasi as Donation } from './pages/Donasi'
 import { AuthProvider, useAuth } from './services/AuthContext'
 
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {

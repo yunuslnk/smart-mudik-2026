@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { MapPin, Calendar, Clock, Car, Send } from 'lucide-react'
 import './MudikForm.css'
@@ -21,14 +21,38 @@ export const MudikForm: React.FC = () => {
         provinsiTujuanId: '',
         kotaTujuanId: '',
         kendaraan: 'Mobil',
+        jenis: 'MUDIK', // MUDIK or BALIK
     })
 
+    const [existingEntries, setExistingEntries] = useState<any[]>([])
     const [loading, setLoading] = useState(false)
     const [success, setSuccess] = useState(false)
 
     useEffect(() => {
-        fetchProvinces()
+        const init = async () => {
+            await fetchProvinces()
+            await fetchExisting()
+        }
+        init()
     }, [])
+
+    const fetchExisting = async () => {
+        try {
+            const res = await axios.get('/api/mudik/me')
+            const entries = res.data || []
+            setExistingEntries(entries)
+
+            // Set default jenis to something not yet submitted
+            const hasMudik = entries.some((e: any) => e.status === 'BERANGKAT' || e.status === 'SAMPAI')
+            const hasBalik = entries.some((e: any) => e.status === 'BALIK')
+
+            if (!hasMudik) setFormData(prev => ({ ...prev, jenis: 'MUDIK' }))
+            else if (!hasBalik) setFormData(prev => ({ ...prev, jenis: 'BALIK' }))
+            else setFormData(prev => ({ ...prev, jenis: '' })) // Both done
+        } catch (err) {
+            console.error('Failed to fetch existing entries', err)
+        }
+    }
 
     const fetchProvinces = async () => {
         try {
@@ -74,6 +98,7 @@ export const MudikForm: React.FC = () => {
             await axios.post('/api/mudik', {
                 ...formData,
                 tanggal: new Date(formData.tanggal).toISOString(),
+                status: formData.jenis === 'MUDIK' ? 'BERANGKAT' : 'BALIK',
             })
             setSuccess(true)
         } catch (err) {
@@ -96,14 +121,35 @@ export const MudikForm: React.FC = () => {
 
     return (
         <div className="form-container animate-fade-in">
-            <div className="premium-form-card">
-                <header className="form-header">
-                    <h1>Daftar Mudik 2026</h1>
-                    <p>Isi formulir di bawah untuk mencatatkan perjalanan mudik Anda.</p>
-                </header>
+            <header className="form-header">
+                <h1>Daftar Mudik 2026</h1>
+                <p>Silakan isi detail perjalanan Anda dengan benar.</p>
+            </header>
 
+            <div className="premium-form-card">
                 <form onSubmit={handleSubmit} className="mudik-form">
                     <div className="form-grid">
+                        {/* Jenis Perjalanan */}
+                        <div className="input-group full">
+                            <label><Send size={16} /> Jenis Perjalanan</label>
+                            <select
+                                required
+                                value={formData.jenis}
+                                onChange={e => setFormData({ ...formData, jenis: e.target.value })}
+                            >
+                                {!existingEntries.some((e: any) => e.status === 'BERANGKAT' || e.status === 'SAMPAI') && (
+                                    <option value="MUDIK">Mudik (Pulang Kampung)</option>
+                                )}
+                                {!existingEntries.some((e: any) => e.status === 'BALIK') && (
+                                    <option value="BALIK">Arus Balik (Kembali ke Kota Asal)</option>
+                                )}
+                                {existingEntries.length >= 2 && (
+                                    <option value="" disabled>Sudah Mendaftar Mudik & Arus Balik</option>
+                                )}
+                                {existingEntries.length === 0 && <option value="" disabled>Pilih Jenis...</option>}
+                            </select>
+                        </div>
+
                         {/* Wilayah Asal */}
                         <div className="input-group">
                             <label><MapPin size={16} /> Provinsi Asal</label>

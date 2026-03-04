@@ -1,19 +1,20 @@
 :root {
   /* Light Mode Tokens */
-  --bg-app: #f0f4f9;
+  --bg-app: #f4f7fe;
   --bg-card: #ffffff;
-  --bg-gradient: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+  --bg-vibrant-blue: linear-gradient(210deg, #1e3a8a 0%, #3b82f6 100%);
+  --bg-gradient: var(--bg-vibrant-blue);
   --text-primary: #1e293b;
   --text-secondary: #64748b;
   --text-on-gradient: #ffffff;
-  --accent: #2563eb;
+  --accent: #3b82f6;
   --accent-soft: #eff6ff;
-  --border: #e2e8f0;
+  --border: #f1f5f9;
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  --radius-lg: 1.5rem;
-  --radius-md: 1rem;
+  --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --radius-lg: 2.5rem;
+  --radius-md: 1.5rem;
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -75,8 +76,15 @@ body {
 
 /* Animations */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .animate-fade-in {
@@ -101,15 +109,50 @@ body {
 }
 
 /* Custom Utilities */
-.flex { display: flex; }
-.flex-col { flex-direction: column; }
-.items-center { align-items: center; }
-.justify-center { justify-content: center; }
-.justify-between { justify-content: space-between; }
-.gap-2 { gap: 0.5rem; }
-.gap-4 { gap: 1rem; }
-.w-full { width: 100%; }
-.text-center { text-align: center; }
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.gap-2 {
+  gap: 0.5rem;
+}
+
+.gap-4 {
+  gap: 1rem;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-muted {
+  color: var(--text-secondary);
+  opacity: 0.8;
+}
+
+.text-sm {
+  font-size: 0.875rem;
+}
 
 /* Buttons */
 .btn-premium {

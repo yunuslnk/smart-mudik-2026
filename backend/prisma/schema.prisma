@@ -16,12 +16,12 @@ model User {
   role       Role        @default(USER)
   createdAt  DateTime    @default(now())
   donations  Donation[]
-  mudikEntry MudikEntry?
+  mudikEntries MudikEntry[]
 }
 
 model MudikEntry {
   id               String   @id @default(uuid())
-  userId           String   @unique
+  userId           String
   tanggal          DateTime
   jam              String
   provinsiAsalId   String
@@ -38,6 +38,7 @@ model MudikEntry {
   provinsiTujuan   Province @relation("TujuanProvince", fields: [provinsiTujuanId], references: [id])
   user             User     @relation(fields: [userId], references: [id])
 
+  @@unique([userId, status])
   @@index([status])
 }
 
@@ -71,6 +72,7 @@ model Donation {
 enum Status {
   BERANGKAT
   SAMPAI
+  BALIK
 }
 
 enum Role {

@@ -3,94 +3,86 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
-    console.log('Final DYNAMIC Seeding...');
+    console.log('Seeding 50 Random Mudik Entries...');
 
     try {
-        const provinces = await prisma.province.findMany();
-        const regencies = await prisma.regency.findMany();
+        const vehicles = ['Mobil', 'Motor', 'Bus', 'Kereta', 'Lainnya'];
+        const allProvs = await prisma.province.findMany();
+        const allRegs = await prisma.regency.findMany();
 
-        if (provinces.length === 0 || regencies.length === 0) {
-            console.error('Provinces or Regencies not found. Run seed-regions first.');
+        if (allProvs.length === 0 || allRegs.length === 0) {
+            console.error('Provinces or Regencies not found. Please ensure regions are seeded.');
             return;
         }
 
-        const vehicles = ['Mobil', 'Motor', 'Bus', 'Kereta', 'Lainnya'];
+        // Clear existing entries to reach exactly 50 as requested (plus the main user)
+        await prisma.mudikEntry.deleteMany({});
+        await prisma.user.deleteMany({
+            where: { email: { not: 'devops1085@gmail.com' } }
+        });
 
-        // Ensure Yunus exists
-        const yunusEmail = 'yunus@gmail.com';
+        // Ensure devops1085 exists
         const yunus = await prisma.user.upsert({
-            where: { email: yunusEmail },
+            where: { email: 'devops1085@gmail.com' },
             update: { name: 'Yunus' },
             create: {
-                googleId: `google-yunus-${Date.now()}`,
-                email: yunusEmail,
+                googleId: 'google-yunus-seed-unique',
+                email: 'devops1085@gmail.com',
                 name: 'Yunus',
             },
         });
 
-        // Use random valid IDs from the DB
-        const pickRandom = (arr: any[]) => arr[Math.floor(Math.random() * arr.length)];
-
-        // Clear existing to avoid unique constraint issues if re-running
-        await prisma.mudikEntry.deleteMany({});
-
-        // Yunus Mudik Entry
-        const startProv = pickRandom(provinces);
-        const startKota = regencies.find(r => r.provinceId === startProv.id) || regencies[0];
-        const endProv = pickRandom(provinces);
-        const endKota = regencies.find(r => r.provinceId === endProv.id) || regencies[0];
-
+        // Main user entry
         await prisma.mudikEntry.create({
             data: {
                 userId: yunus.id,
                 tanggal: new Date(2026, 3, 10),
                 jam: '08:00',
-                provinsiAsalId: startProv.id,
-                kotaAsalId: startKota.id,
-                provinsiTujuanId: endProv.id,
-                kotaTujuanId: endKota.id,
+                provinsiAsalId: '31',
+                kotaAsalId: '3171',
+                provinsiTujuanId: '33',
+                kotaTujuanId: '3328',
                 kendaraan: 'Mobil',
                 status: 'BERANGKAT',
             },
         });
 
-        console.log('Generating 100 more entries...');
-        for (let i = 0; i < 100; i++) {
-            const timestamp = Date.now() + i;
+        console.log('Generating 50 random entries...');
+        for (let i = 0; i < 50; i++) {
             const user = await prisma.user.create({
                 data: {
-                    googleId: `google-id-${timestamp}`,
-                    email: `user-${timestamp}@test.com`,
-                    name: `Pemudik ${i}`,
+                    googleId: `dummy-google-id-${i}-${Date.now()}`,
+                    email: `dummy-traveler-${i}-${Date.now()}@example.com`,
+                    name: `Dummy Traveler ${i}`,
                 }
             });
 
-            const pA = pickRandom(provinces);
-            const kA = regencies.find(r => r.provinceId === pA.id) || regencies[0];
-            const pT = pickRandom(provinces);
-            const kT = regencies.find(r => r.provinceId === pT.id) || regencies[0];
+            const provA = allProvs[Math.floor(Math.random() * allProvs.length)];
+            const kotaA = allRegs.filter(r => r.provinceId === provA.id)[0] || allRegs[0];
+            const provT = allProvs[Math.floor(Math.random() * allProvs.length)];
+            const kotaT = allRegs.filter(r => r.provinceId === provT.id)[0] || allRegs[0];
 
-            const isBalik = i % 4 === 0;
-            const day = isBalik ? (Math.floor(Math.random() * 7) + 20) : (Math.floor(Math.random() * 10) + 5);
+            const isReturn = i % 3 === 0; // Some return flow data
+            const day = isReturn ? (Math.floor(Math.random() * 5) + 20) : (Math.floor(Math.random() * 10) + 5);
 
             await prisma.mudikEntry.create({
                 data: {
                     userId: user.id,
                     tanggal: new Date(2026, 3, day),
-                    jam: '12:00',
-                    provinsiAsalId: pA.id,
-                    kotaAsalId: kA.id,
-                    provinsiTujuanId: pT.id,
-                    kotaTujuanId: kT.id,
-                    kendaraan: pickRandom(vehicles),
-                    status: isBalik ? 'BALIK' : 'BERANGKAT',
+                    jam: `${String(Math.floor(Math.random() * 24)).padStart(2, '0')}:00`,
+                    provinsiAsalId: provA.id,
+                    kotaAsalId: kotaA.id,
+                    provinsiTujuanId: provT.id,
+                    kotaTujuanId: kotaT.id,
+                    kendaraan: vehicles[Math.floor(Math.random() * vehicles.length)],
+                    status: isReturn ? 'BALIK' : 'BERANGKAT',
                 }
             });
         }
 
-        console.log('Seeding Success!');
+        console.log('Successfully seeded 50 dummy entries!');
     } catch (err) {
-        console.error('Final attempt error:', err);
+        console.error('Seeding Error:', err);
     } finally {
         await prisma.$disconnect();
     }

@@ -1,0 +1,95 @@
+.donasi-container {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+.donasi-header {
+    margin-bottom: 2rem;
+    position: relative;
+    padding-top: 1rem;
+}
+
+.btn-back {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: #ffffff;
+    padding: 0.5rem 1rem;
+    border-radius: 1rem;
+    cursor: pointer;
+    font-weight: 700;
+    transition: var(--transition);
+}
+
+.donasi-header h1 {
+    font-size: 1.5rem;
+    color: #ffffff;
+    font-weight: 800;
+    margin-top: 1.5rem;
+}
+
+.bank-card-premium {
+    background: #ffffff;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    overflow: hidden;
+    padding: 2.5rem 1.5rem;
+}
+
+.card-accent-line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 6px;
+    height: 100%;
+    background: var(--accent);
+}
+
+.detail-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.detail-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #eff6ff;
+    color: var(--accent);
+}
+
+.detail-label {
+    display: block;
+    color: #64748b;
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 2px;
+}
+
+.detail-value {
+    color: #1e293b;
+    font-weight: 800;
+    font-size: 1.25rem;
+}
+
+code.detail-value {
+    font-family: inherit;
+    letter-spacing: 2px;
+    font-size: 1.75rem;
+}
+
+@media (max-width: 480px) {
+    code.detail-value {
+        font-size: 1.5rem;
+    }
+}

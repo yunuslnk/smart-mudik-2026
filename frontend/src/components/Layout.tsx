@@ -1,6 +1,13 @@
 import React from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { LayoutDashboard, PlusCircle, Heart, LogOut, LogIn } from 'lucide-react'
+import {
+    Home,
+    BarChart2,
+    User,
+    LogOut,
+    PlusCircle,
+    Maximize
+} from 'lucide-react'
 import { useAuth } from '../services/AuthContext'
 import './Layout.css'
 
@@ -10,38 +17,55 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
     return (
         <div className="layout-container premium-view">
+            {/* Desktop Header */}
             <header className="premium-header">
                 <Link to="/" className="premium-logo">smart mudik 2026</Link>
                 <nav className="premium-nav">
-                    <Link to="/" className={`premium-nav-item ${location.pathname === '/' ? 'active' : ''}`}>
-                        <LayoutDashboard size={18} />
-                        <span>Dashboard</span>
-                    </Link>
-                    <Link to="/daftar" className={`premium-nav-item ${location.pathname === '/daftar' ? 'active' : ''}`}>
-                        <PlusCircle size={18} />
-                        <span>Daftar</span>
-                    </Link>
-                    <Link to="/donasi" className={`premium-nav-item ${location.pathname === '/donasi' ? 'active' : ''}`}>
-                        <Heart size={18} />
-                        <span>Donasi</span>
-                    </Link>
-                    {user ? (
-                        <button onClick={logout} className="premium-nav-item btn-plain">
-                            <LogOut size={18} />
-                            <span>Keluar</span>
-                        </button>
-                    ) : (
-                        <button onClick={login} className="premium-nav-item btn-plain">
-                            <LogIn size={18} />
-                            <span>Masuk</span>
-                        </button>
-                    )}
+                    <Link to="/" className={`premium-nav-item ${location.pathname === '/' ? 'active' : ''}`}>Dashboard</Link>
+                    <Link to="/daftar" className={`premium-nav-item ${location.pathname === '/daftar' ? 'active' : ''}`}>Daftar</Link>
+                    <Link to="/donasi" className={`premium-nav-item ${location.pathname === '/donasi' ? 'active' : ''}`}>Donasi</Link>
                 </nav>
             </header>
 
             <main className="content">
                 {children}
             </main>
+
+            {/* Bottom Navigation (Mobile View) */}
+            <nav className="bottom-nav">
+                <Link to="/" className={`nav-item ${location.pathname === '/' ? 'active' : ''}`}>
+                    <Home />
+                    <span>Home</span>
+                </Link>
+                <Link to="/stats" className={`nav-item ${location.pathname === '/stats' ? 'active' : ''}`}>
+                    <BarChart2 />
+                    <span>Stats</span>
+                </Link>
+
+                <div className="qris-btn-container">
+                    <button className="qris-btn" onClick={() => (window.location.href = '/daftar')}>
+                        <Maximize size={28} />
+                        <span>DAFTAR</span>
+                    </button>
+                </div>
+
+                <Link to="/profile" className={`nav-item ${location.pathname === '/profile' ? 'active' : ''}`}>
+                    <User />
+                    <span>Akun</span>
+                </Link>
+
+                {user ? (
+                    <button onClick={logout} className="nav-item btn-plain" style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}>
+                        <LogOut />
+                        <span>Keluar</span>
+                    </button>
+                ) : (
+                    <button onClick={login} className="nav-item btn-plain" style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}>
+                        <User />
+                        <span>Masuk</span>
+                    </button>
+                )}
+            </nav>
         </div>
     )
 }
