@@ -9,6 +9,7 @@ import {
     Maximize
 } from 'lucide-react'
 import { useAuth } from '../services/AuthContext'
+import { ChatWidget } from './ChatWidget'
 import './Layout.css'
 
 export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -30,6 +31,8 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
             <main className="content">
                 {children}
             </main>
+
+            <ChatWidget />
 
             {/* Bottom Navigation (Mobile View) */}
             <nav className="bottom-nav">

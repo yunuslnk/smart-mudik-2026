@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { MudikModule } from './mudik/mudik.module';
 import { DonationModule } from './donation/donation.module';
 import { RegionModule } from './region/region.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { RegionModule } from './region/region.module';
     MudikModule,
     DonationModule,
     RegionModule,
+    ChatModule,
   ],
 })
 export class AppModule { }

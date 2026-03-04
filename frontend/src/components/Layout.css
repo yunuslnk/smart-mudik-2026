@@ -8,27 +8,51 @@
     /* Space for bottom nav */
 }
 
-/* Vibrant Super-App Background */
+/* Vibrant Super-App Background with Dynamic Filters */
 .layout-container.premium-view {
-    background: var(--bg-vibrant-blue);
+    background: url('/bg-mudik-base.png') center/cover no-repeat fixed;
     background-attachment: fixed;
+    position: relative;
+    transition: filter 1.2s ease-in-out;
 }
 
 .layout-container.premium-view::before {
     content: '';
     position: fixed;
-    top: -10%;
-    right: -10%;
-    width: 300px;
-    height: 300px;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
-    border-radius: 50%;
-    z-index: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.15);
+    /* Base overlay for readability */
+    z-index: 1;
+    pointer-events: none;
+    transition: background 1.2s ease;
 }
 
-.layout-container.premium-view::after {
-    display: none;
-    /* Remove old overlays */
+/* Time-based States */
+.layout-container.morning {
+    filter: brightness(1.15) saturate(1.1) sepia(0.05);
+}
+
+.layout-container.day {
+    filter: contrast(1.05) saturate(1.2);
+}
+
+.layout-container.afternoon {
+    filter: sepia(0.25) saturate(1.4) brightness(0.95);
+}
+
+.layout-container.afternoon::before {
+    background: rgba(255, 120, 0, 0.1);
+}
+
+.layout-container.night {
+    filter: brightness(0.6) contrast(1.1) saturate(0.9) hue-rotate(15deg);
+}
+
+.layout-container.night::before {
+    background: rgba(0, 30, 120, 0.2);
 }
 
 .content {

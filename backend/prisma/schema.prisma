@@ -17,6 +17,16 @@ model User {
   createdAt  DateTime    @default(now())
   donations  Donation[]
   mudikEntries MudikEntry[]
+  chatMessages ChatMessage[]
+}
+
+model ChatMessage {
+  id        String   @id @default(uuid())
+  userId    String?
+  content   String
+  isAdmin   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id])
 }
 
 model MudikEntry {

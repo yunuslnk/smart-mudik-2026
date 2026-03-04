@@ -76,21 +76,33 @@ export const Dashboard: React.FC = () => {
     useEffect(() => {
         const updateGreeting = () => {
             const hour = new Date().getHours()
-            if (hour >= 5 && hour < 11) setGreeting('Selamat Pagi')
-            else if (hour >= 11 && hour < 15) setGreeting('Selamat Siang')
-            else if (hour >= 15 && hour < 18) setGreeting('Selamat Sore')
-            else setGreeting('Selamat Malam')
+            const layout = document.querySelector('.layout-container')
+
+            // Remove old classes
+            layout?.classList.remove('morning', 'day', 'afternoon', 'night')
+
+            if (hour >= 5 && hour < 11) {
+                setGreeting('Selamat Pagi')
+                layout?.classList.add('morning')
+            } else if (hour >= 11 && hour < 15) {
+                setGreeting('Selamat Siang')
+                layout?.classList.add('day')
+            } else if (hour >= 15 && hour < 18) {
+                setGreeting('Selamat Sore')
+                layout?.classList.add('afternoon')
+            } else {
+                setGreeting('Selamat Malam')
+                layout?.classList.add('night')
+            }
         }
         updateGreeting()
     }, [user])
 
     const charts = [
-        { title: 'Total Mudik', data: mudikFlow },
-        { title: 'Arus Balik', data: returnFlow },
-        { title: 'Top Kota', data: topDestinations }
+        { title: 'Arus Mudik (Statistik)', data: mudikFlow },
+        { title: 'Arus Balik (Statistik)', data: returnFlow },
+        { title: 'Top Tujuan Kota', data: topDestinations }
     ]
-
-    const BAR_COLORS = ['#4fd1c5', '#3b82f6', '#fbbf24', '#f87171']
 
     return (
         <div className="dashboard-container">
@@ -110,6 +122,12 @@ export const Dashboard: React.FC = () => {
                     <div className="chart-content">
                         <ResponsiveContainer width="100%" height={180}>
                             <BarChart data={charts[activeChart].data}>
+                                <defs>
+                                    <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stopColor="#3b82f6" stopOpacity={1} />
+                                        <stop offset="100%" stopColor="#60a5fa" stopOpacity={0.6} />
+                                    </linearGradient>
+                                </defs>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} strokeOpacity={0.05} />
                                 <XAxis
                                     dataKey={activeChart === 2 ? 'name' : 'date'}
@@ -123,14 +141,17 @@ export const Dashboard: React.FC = () => {
                                     tickLine={false}
                                     fontSize={10}
                                     stroke="#94a3b8"
-                                    tickFormatter={(val) => `${val}%`} // Simplified per design
                                 />
-                                <Tooltip cursor={{ fill: '#eff6ff' }} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }} />
-                                <Bar dataKey="count" radius={[4, 4, 0, 0]} barSize={35}>
-                                    {charts[activeChart].data.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={BAR_COLORS[index % BAR_COLORS.length]} />
-                                    ))}
-                                </Bar>
+                                <Tooltip
+                                    cursor={{ fill: 'rgba(59, 130, 246, 0.05)' }}
+                                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                                />
+                                <Bar
+                                    dataKey="count"
+                                    fill="url(#colorCount)"
+                                    radius={[6, 6, 0, 0]}
+                                    barSize={activeChart === 2 ? 25 : 35}
+                                />
                             </BarChart>
                         </ResponsiveContainer>
                     </div>
