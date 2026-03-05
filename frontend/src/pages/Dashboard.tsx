@@ -104,6 +104,14 @@ export const Dashboard: React.FC = () => {
         { title: 'Top Tujuan Kota', data: topDestinations }
     ]
 
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setActiveChart(prev => (prev + 1) % charts.length)
+        }, 60000) // 1 minute interval
+
+        return () => clearInterval(interval)
+    }, [charts.length, activeChart]) // Re-run effect when activeChart changes to reset interval
+
     return (
         <div className="dashboard-container">
             <div className="dashboard-inner animate-fade-in">

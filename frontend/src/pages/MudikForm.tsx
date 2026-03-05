@@ -26,12 +26,14 @@ export const MudikForm: React.FC = () => {
 
     const [existingEntries, setExistingEntries] = useState<any[]>([])
     const [loading, setLoading] = useState(false)
+    const [initLoading, setInitLoading] = useState(true)
     const [success, setSuccess] = useState(false)
 
     useEffect(() => {
         const init = async () => {
-            await fetchProvinces()
-            await fetchExisting()
+            setInitLoading(true)
+            await Promise.all([fetchProvinces(), fetchExisting()])
+            setInitLoading(false)
         }
         init()
     }, [])
@@ -101,8 +103,9 @@ export const MudikForm: React.FC = () => {
                 status: formData.jenis === 'MUDIK' ? 'BERANGKAT' : 'BALIK',
             })
             setSuccess(true)
-        } catch (err) {
-            alert('Gagal mendaftarkan mudik. Pastikan Anda sudah login, semua wilayah diisi, dan belum mendaftar sebelumnya.')
+        } catch (err: any) {
+            const errorMsg = err.response?.data?.message || 'Gagal mendaftarkan mudik. Pastikan semua wilayah diisi dan Anda belum mendaftar sebelumnya.';
+            alert(errorMsg);
         } finally {
             setLoading(false)
         }
@@ -146,7 +149,8 @@ export const MudikForm: React.FC = () => {
                                 {existingEntries.length >= 2 && (
                                     <option value="" disabled>Sudah Mendaftar Mudik & Arus Balik</option>
                                 )}
-                                {existingEntries.length === 0 && <option value="" disabled>Pilih Jenis...</option>}
+                                {existingEntries.length === 0 && !initLoading && <option value="" disabled>Pilih Jenis...</option>}
+                                {initLoading && <option value="">Loading data...</option>}
                             </select>
                         </div>
 
@@ -233,8 +237,8 @@ export const MudikForm: React.FC = () => {
                         </div>
                     </div>
 
-                    <button type="submit" className="btn-submit" disabled={loading}>
-                        {loading ? 'Mengirim...' : 'Daftarkan Perjalanan'}
+                    <button type="submit" className="btn-submit" disabled={loading || initLoading || !formData.jenis}>
+                        {initLoading ? 'Menyiapkan Data...' : loading ? 'Mengirim...' : 'Daftarkan Perjalanan'}
                     </button>
                 </form>
             </div>

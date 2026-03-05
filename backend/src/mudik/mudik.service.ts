@@ -14,13 +14,16 @@ export class MudikService {
     });
 
     if (existing) {
-      throw new BadRequestException(`User already submitted ${data.status || 'BERANGKAT'} data`);
+      throw new BadRequestException(`Anda sudah terdaftar untuk status ${data.status || 'BERANGKAT'}`);
     }
+
+    // Strip non-model fields
+    const { jenis, ...prismaData } = data;
 
     return this.prisma.mudikEntry.create({
       data: {
         userId,
-        ...data,
+        ...prismaData,
       },
       include: {
         provinsiAsal: true,
@@ -36,7 +39,7 @@ export class MudikService {
       where: {
         userId_status: { userId, status }
       },
-      data,
+      data: (({ jenis, ...d }) => d)(data),
       include: {
         provinsiAsal: true,
         kotaAsal: true,
