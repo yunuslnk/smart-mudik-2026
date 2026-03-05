@@ -23,6 +23,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     async handleConnection(client: Socket) {
         console.log(`Client connected: ${client.id}`);
+        // Fetch global messages for public chat
         const messages = await this.chatService.getMessages();
         client.emit('init_messages', messages);
     }
@@ -41,6 +42,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             data.content,
             data.isAdmin || false,
         );
+
+        // Broadcast to EVERYONE (YouTube style)
         this.server.emit('receive_message', message);
     }
 }

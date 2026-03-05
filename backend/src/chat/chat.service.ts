@@ -36,7 +36,7 @@ export class ChatService {
                     },
                 },
             },
-            take: 50,
+            take: 100, // Increase history for public chat
         });
     }
 }
