@@ -1,15 +1,18 @@
+@import url('https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap');
+
 :root {
   /* Light Mode Tokens */
-  --bg-app: #f4f7fe;
+  --bg-app: #f8fafc;
   --bg-card: #ffffff;
   --bg-vibrant-blue: linear-gradient(210deg, #1e3a8a 0%, #3b82f6 100%);
   --bg-gradient: var(--bg-vibrant-blue);
-  --text-primary: #1e293b;
-  --text-secondary: #64748b;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
   --text-on-gradient: #ffffff;
-  --accent: #3b82f6;
+  --accent: #2563eb;
   --accent-soft: #eff6ff;
-  --border: #f1f5f9;
+  --border: #e2e8f0;
+  --header-bg: rgba(255, 255, 255, 0.8);
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
   --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
@@ -20,23 +23,24 @@
 
 [data-theme='dark'] {
   /* Dark Mode Tokens */
-  --bg-app: #0f172a;
-  --bg-card: #1e293b;
-  --bg-gradient: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  --bg-app: #020617;
+  --bg-card: #0f172a;
+  --bg-gradient: linear-gradient(135deg, #0f172a 0%, #020617 100%);
   --text-primary: #f8fafc;
   --text-secondary: #94a3b8;
   --text-on-gradient: #f8fafc;
   --accent: #3b82f6;
   --accent-soft: rgba(59, 130, 246, 0.1);
-  --border: #334155;
-  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3);
+  --border: #1e293b;
+  --header-bg: rgba(15, 23, 42, 0.8);
+  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.5);
 }
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: 'Outfit', 'Inter', system-ui, sans-serif;
+  font-family: 'Patrick Hand', cursive;
   -webkit-font-smoothing: antialiased;
 }
 

@@ -6,18 +6,22 @@ import {
     User,
     LogOut,
     PlusCircle,
-    Maximize
+    Maximize,
+    Sun,
+    Moon
 } from 'lucide-react'
 import { useAuth } from '../services/AuthContext'
+import { useTheme } from '../services/ThemeContext'
 import { ChatWidget } from './ChatWidget'
 import './Layout.css'
 
 export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const location = useLocation()
     const { user, login, logout } = useAuth()
+    const { theme, toggleTheme } = useTheme()
 
     return (
-        <div className="layout-container premium-view">
+        <div className={`layout-container premium-view ${theme}`}>
             {/* Desktop Header */}
             <header className="premium-header">
                 <Link to="/" className="premium-logo">smart mudik 2026</Link>
@@ -25,6 +29,9 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                     <Link to="/" className={`premium-nav-item ${location.pathname === '/' ? 'active' : ''}`}>Dashboard</Link>
                     <Link to="/daftar" className={`premium-nav-item ${location.pathname === '/daftar' ? 'active' : ''}`}>Daftar</Link>
                     <Link to="/donasi" className={`premium-nav-item ${location.pathname === '/donasi' ? 'active' : ''}`}>Donasi</Link>
+                    <button onClick={toggleTheme} className="theme-toggle-btn">
+                        {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+                    </button>
                 </nav>
             </header>
 

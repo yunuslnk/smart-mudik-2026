@@ -2,6 +2,9 @@
     max-width: 500px;
     margin: 0 auto;
     padding: 1rem;
+    min-height: 80vh;
+    display: flex;
+    flex-direction: column;
 }
 
 .donasi-header {
@@ -14,82 +17,126 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    background: rgba(255, 255, 255, 0.2);
-    border: none;
-    color: #ffffff;
-    padding: 0.5rem 1rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    padding: 0.6rem 1.2rem;
     border-radius: 1rem;
     cursor: pointer;
     font-weight: 700;
     transition: var(--transition);
+    box-shadow: var(--shadow-sm);
 }
 
-.donasi-header h1 {
-    font-size: 1.5rem;
-    color: #ffffff;
-    font-weight: 800;
-    margin-top: 1.5rem;
-}
-
-.bank-card-premium {
-    background: #ffffff;
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-lg);
-    position: relative;
-    overflow: hidden;
-    padding: 2.5rem 1.5rem;
-}
-
-.card-accent-line {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 6px;
-    height: 100%;
-    background: var(--accent);
-}
-
-.detail-row {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.detail-icon {
-    width: 50px;
-    height: 50px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #eff6ff;
+.btn-back:hover {
+    background: var(--accent-soft);
     color: var(--accent);
 }
 
-.detail-label {
-    display: block;
-    color: #64748b;
-    font-size: 0.7rem;
+.donasi-header h1 {
+    font-size: 2rem;
+    color: var(--text-primary);
     font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 2px;
+    margin-top: 2rem;
+    text-align: center;
 }
 
-.detail-value {
-    color: #1e293b;
-    font-weight: 800;
-    font-size: 1.25rem;
+.donation-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2rem;
 }
 
-code.detail-value {
-    font-family: inherit;
-    letter-spacing: 2px;
-    font-size: 1.75rem;
+.trakteer-card {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    padding: 3rem 2rem;
+    text-align: center;
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    transition: var(--transition);
 }
 
-@media (max-width: 480px) {
-    code.detail-value {
-        font-size: 1.5rem;
+.trakteer-card:hover {
+    transform: translateY(-5px);
+}
+
+.trakteer-icon {
+    width: 100px;
+    height: 100px;
+    background: #fff1f2;
+    color: #e11d48;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(225, 29, 72, 0.4);
     }
+
+    70% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 15px rgba(225, 29, 72, 0);
+    }
+
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(225, 29, 72, 0);
+    }
+}
+
+.trakteer-content h2 {
+    font-size: 1.5rem;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    font-weight: 800;
+}
+
+.trakteer-content p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    font-size: 1rem;
+}
+
+.trakteer-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    background: linear-gradient(135deg, #e11d48 0%, #be123c 100%);
+    color: white;
+    padding: 1rem 2.5rem;
+    border-radius: 1.5rem;
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 1.1rem;
+    transition: var(--transition);
+    box-shadow: 0 10px 20px rgba(225, 29, 72, 0.3);
+}
+
+.trakteer-link:hover {
+    transform: scale(1.05);
+    box-shadow: 0 15px 25px rgba(225, 29, 72, 0.4);
+}
+
+.social-proof {
+    text-align: center;
+    font-style: italic;
+    color: var(--text-secondary);
+    opacity: 0.7;
+    font-size: 0.9rem;
+    font-weight: 600;
 }

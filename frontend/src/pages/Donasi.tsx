@@ -1,5 +1,5 @@
 import React from 'react'
-import { ArrowLeft, Building2, CreditCard, User } from 'lucide-react'
+import { ArrowLeft, Heart, ExternalLink } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import './Donasi.css'
 
@@ -12,47 +12,34 @@ export const Donasi: React.FC = () => {
                 <button className="btn-back" onClick={() => navigate(-1)}>
                     <ArrowLeft size={18} /> Kembali
                 </button>
-                <h1>Donasi</h1>
+                <h1>Dukung Kami</h1>
             </header>
 
             <div className="donation-wrapper">
-                <div className="bank-card-premium">
-                    <div className="card-accent-line"></div>
-
-                    <div className="detail-row mb-8">
-                        <div className="detail-icon">
-                            <Building2 size={24} />
-                        </div>
-                        <div className="detail-text">
-                            <span className="detail-label">Bank</span>
-                            <p className="detail-value">CIMB NIAGA</p>
-                        </div>
+                <div className="trakteer-card">
+                    <div className="trakteer-icon">
+                        <Heart size={48} className="heart-icon" />
                     </div>
 
-                    <div className="detail-row mb-8">
-                        <div className="detail-icon">
-                            <CreditCard size={24} />
-                        </div>
-                        <div className="detail-text">
-                            <span className="detail-label">Nomor Rekening</span>
-                            <code className="detail-value">706176048400</code>
-                        </div>
-                    </div>
+                    <div className="trakteer-content">
+                        <h2>Satu Kopi, Sejuta Kebaikan</h2>
+                        <p>Dukungan Anda sangat berarti bagi pengembangan aplikasi <strong>Smart Mudik 2026</strong> agar tetap gratis dan nyaman digunakan untuk semua.</p>
 
-                    <div className="detail-row">
-                        <div className="detail-icon">
-                            <User size={24} />
-                        </div>
-                        <div className="detail-text">
-                            <span className="detail-label">Atas Nama</span>
-                            <p className="detail-value">YUNUS SUSMANTO</p>
-                        </div>
+                        <a
+                            href="https://trakteer.id/devops1085"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="trakteer-link"
+                        >
+                            <span>Dukung di Trakteer</span>
+                            <ExternalLink size={20} />
+                        </a>
                     </div>
                 </div>
 
-                <p className="text-center text-white opacity-60 text-xs mt-8 font-bold italic">
-                    "Kebaikan Anda memperlancar perjalanan sesama."
-                </p>
+                <div className="social-proof">
+                    <p>"Kebaikan Anda memperlancar perjalanan sesama."</p>
+                </div>
             </div>
         </div>
     )

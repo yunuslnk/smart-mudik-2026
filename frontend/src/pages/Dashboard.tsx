@@ -26,7 +26,8 @@ export const Dashboard: React.FC = () => {
     const [mudikFlow, setMudikFlow] = useState<any[]>([])
     const [returnFlow, setReturnFlow] = useState<any[]>([])
     const [topDestinations, setTopDestinations] = useState<any[]>([])
-    const [myEntry, setMyEntry] = useState<any>(null)
+    const [departureEntry, setDepartureEntry] = useState<any>(null)
+    const [returnEntry, setReturnEntry] = useState<any>(null)
     const [greeting, setGreeting] = useState('')
     const [totalTravelers, setTotalTravelers] = useState(0)
 
@@ -61,10 +62,11 @@ export const Dashboard: React.FC = () => {
                     count: d.count
                 })))
 
-                const activeEntry = meData.find((e: any) => e.status === 'BERANGKAT') ||
-                    meData.find((e: any) => e.status === 'SAMPAI') ||
-                    meData[0] || null
-                setMyEntry(activeEntry)
+                const dep = meData.find((e: any) => e.status === 'BERANGKAT' || e.status === 'SAMPAI')
+                const ret = meData.find((e: any) => e.status === 'BALIK')
+
+                setDepartureEntry(dep || null)
+                setReturnEntry(ret || null)
                 setTotalTravelers(totalCount.data?.total || totalCount.data || 0)
             } catch (err) {
                 console.error('Failed to fetch dashboard data', err)
@@ -171,61 +173,56 @@ export const Dashboard: React.FC = () => {
                     </div>
                 </section>
 
-                {/* Travel Status Tooltip-style Card */}
-                {user && myEntry && myEntry.kotaTujuan && myEntry.kotaAsal ? (
-                    <div className="status-card">
-                        <div className="icon-box">
-                            <Home size={20} />
+                {/* Journey Table Card */}
+                {user && (departureEntry || returnEntry) ? (
+                    <div className="journey-card animate-fade-in">
+                        <div className="journey-header">
+                            <Home size={18} className="text-accent" />
+                            <h3>Status Perjalanan Kamu</h3>
                         </div>
-                        <div className="status-info">
-                            <h4>Tujuan Kamu <span>ke {myEntry.kotaTujuan.name?.split(' ')[0]}</span> dari {myEntry.kotaAsal.name?.split(' ')[0]}</h4>
-                        </div>
+                        <table className="journey-table">
+                            <thead>
+                                <tr>
+                                    <th>TIPE</th>
+                                    <th>RUTE</th>
+                                    <th>STATUS</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {departureEntry && (
+                                    <tr>
+                                        <td><span className="badge-mudik">Mudik</span></td>
+                                        <td>
+                                            <div className="route-text">
+                                                <strong>{departureEntry.kotaTujuan.name?.split(' ')[0]}</strong>
+                                                <small>dari {departureEntry.kotaAsal.name?.split(' ')[0]}</small>
+                                            </div>
+                                        </td>
+                                        <td><span className={`status-pill ${departureEntry.status.toLowerCase()}`}>{departureEntry.status}</span></td>
+                                    </tr>
+                                )}
+                                {returnEntry && (
+                                    <tr>
+                                        <td><span className="badge-balik">Balik</span></td>
+                                        <td>
+                                            <div className="route-text">
+                                                <strong>{returnEntry.kotaTujuan.name?.split(' ')[0]}</strong>
+                                                <small>dari {returnEntry.kotaAsal.name?.split(' ')[0]}</small>
+                                            </div>
+                                        </td>
+                                        <td><span className="status-pill balik">{returnEntry.status}</span></td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
                     </div>
                 ) : (
-                    <div className="status-card">
+                    <div className="status-card clickable animate-fade-in" onClick={() => navigate('/daftar')}>
                         <div className="icon-box"><PlusCircle size={20} /></div>
                         <div className="status-info"><h4>Daftarkan <span>Perjalanan Mudik</span> Anda Sekarang</h4></div>
                     </div>
                 )}
 
-                {/* Menu Grid Card */}
-                <div className="menu-grid-card">
-                    <div className="menu-grid">
-                        <button className="menu-item" onClick={() => navigate('/donasi')}>
-                            <div className="icon-circle bg-teal"><Heart size={24} /></div>
-                            <span>Donasi</span>
-                        </button>
-                        <button className="menu-item" onClick={() => navigate('/daftar')}>
-                            <div className="icon-circle bg-violet"><PlusCircle size={24} /></div>
-                            <span>Tambah Data</span>
-                        </button>
-                        <button className="menu-item">
-                            <div className="icon-circle bg-cyan"><ShoppingBag size={24} /></div>
-                            <span>Pembelian</span>
-                        </button>
-                        <button className="menu-item">
-                            <div className="icon-circle bg-pink"><Home size={24} /></div>
-                            <span>KPR</span>
-                        </button>
-
-                        <button className="menu-item">
-                            <div className="icon-circle bg-rose"><TrendingUp size={24} /></div>
-                            <span>Reksa Dana</span>
-                        </button>
-                        <button className="menu-item">
-                            <div className="icon-circle bg-teal"><CreditCard size={24} /></div>
-                            <span>Cardless</span>
-                        </button>
-                        <button className="menu-item">
-                            <div className="icon-circle bg-violet"><Smartphone size={24} /></div>
-                            <span>Lifestyle</span>
-                        </button>
-                        <button className="menu-item">
-                            <div className="icon-circle bg-blue-dark"><Grid size={24} /></div>
-                            <span>Semua Menu</span>
-                        </button>
-                    </div>
-                </div>
 
             </div>
         </div>
