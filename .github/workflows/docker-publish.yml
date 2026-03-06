@@ -68,7 +68,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             # Navigate to project directory
-            cd ~/data || exit 1
+            cd ~/smart-mudik-2026/data || exit 1
             
             # Pull latest images from GHCR
             docker compose pull
