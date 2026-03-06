@@ -1,6 +1,12 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import axios from 'axios'
 
+// Configure axios to always hit the backend port 20262
+const { protocol, hostname } = window.location;
+// Only set baseURL if we are on a hostname (to avoid breaking local dev if needed, though port 20262 is standard here)
+axios.defaults.baseURL = `${protocol}//${hostname}:20262`;
+axios.defaults.withCredentials = true; // Ensure cookies are sent
+
 interface User {
     id: string
     name: string
