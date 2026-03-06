@@ -12,7 +12,8 @@ import {
     TrendingUp,
     CreditCard,
     Smartphone,
-    Grid
+    Grid,
+    BarChart2
 } from 'lucide-react'
 import { useAuth } from '../services/AuthContext'
 import { useNavigate } from 'react-router-dom'
@@ -130,40 +131,47 @@ export const Dashboard: React.FC = () => {
                     </div>
 
                     <div className="chart-content">
-                        <ResponsiveContainer width="100%" height={180}>
-                            <BarChart data={charts[activeChart].data}>
-                                <defs>
-                                    <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="0%" stopColor="#3b82f6" stopOpacity={1} />
-                                        <stop offset="100%" stopColor="#60a5fa" stopOpacity={0.6} />
-                                    </linearGradient>
-                                </defs>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} strokeOpacity={0.05} />
-                                <XAxis
-                                    dataKey={activeChart === 2 ? 'name' : 'date'}
-                                    axisLine={false}
-                                    tickLine={false}
-                                    fontSize={10}
-                                    stroke="#94a3b8"
-                                />
-                                <YAxis
-                                    axisLine={false}
-                                    tickLine={false}
-                                    fontSize={10}
-                                    stroke="#94a3b8"
-                                />
-                                <Tooltip
-                                    cursor={{ fill: 'rgba(59, 130, 246, 0.05)' }}
-                                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
-                                />
-                                <Bar
-                                    dataKey="count"
-                                    fill="url(#colorCount)"
-                                    radius={[6, 6, 0, 0]}
-                                    barSize={activeChart === 2 ? 25 : 35}
-                                />
-                            </BarChart>
-                        </ResponsiveContainer>
+                        {charts[activeChart].data.length > 0 ? (
+                            <ResponsiveContainer width="100%" height={180}>
+                                <BarChart data={charts[activeChart].data}>
+                                    <defs>
+                                        <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="0%" stopColor="#3b82f6" stopOpacity={1} />
+                                            <stop offset="100%" stopColor="#60a5fa" stopOpacity={0.6} />
+                                        </linearGradient>
+                                    </defs>
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} strokeOpacity={0.05} />
+                                    <XAxis
+                                        dataKey={activeChart === 2 ? 'name' : 'date'}
+                                        axisLine={false}
+                                        tickLine={false}
+                                        fontSize={10}
+                                        stroke="#94a3b8"
+                                    />
+                                    <YAxis
+                                        axisLine={false}
+                                        tickLine={false}
+                                        fontSize={10}
+                                        stroke="#94a3b8"
+                                    />
+                                    <Tooltip
+                                        cursor={{ fill: 'rgba(59, 130, 246, 0.05)' }}
+                                        contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                                    />
+                                    <Bar
+                                        dataKey="count"
+                                        fill="url(#colorCount)"
+                                        radius={[6, 6, 0, 0]}
+                                        barSize={activeChart === 2 ? 25 : 35}
+                                    />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        ) : (
+                            <div className="empty-chart-placeholder">
+                                <BarChart2 size={48} strokeOpacity={0.1} />
+                                <p>Belum ada data perjalanan saat ini</p>
+                            </div>
+                        )}
                     </div>
 
                     <div className="carousel-indicators flex justify-center">
