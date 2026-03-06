@@ -43,9 +43,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     const login = () => {
-        // Dynamically get current hostname and use backend port 20262
-        const { protocol, hostname } = window.location;
-        window.location.href = `${protocol}//${hostname}:20262/auth/google`;
+        // Construct backend URL explicitly with /api prefix
+        const backendUrl = `${window.location.protocol}//${window.location.hostname}:20262/api/auth/google`;
+        console.log('Redirecting to:', backendUrl);
+        window.location.href = backendUrl;
     }
 
     const logout = async () => {
