@@ -14,6 +14,10 @@ async function bootstrap() {
   app.use(cookieParser());
   app.setGlobalPrefix('api');
 
+  const dbUrl = process.env.DATABASE_URL || '';
+  const maskedUrl = dbUrl.replace(/:.+@/, ':****@');
+  console.log(`[Database] Connecting to: ${maskedUrl}`);
+
   await app.listen(20262);
 }
 bootstrap();
