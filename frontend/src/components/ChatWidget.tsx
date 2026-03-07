@@ -30,11 +30,24 @@ export const ChatWidget: React.FC = () => {
 
     useEffect(() => {
         if (isOpen && !socketRef.current) {
-            // Updated to port 20262 as per backend config
-            socketRef.current = io('http://127.0.0.1:20262', {
+            const { protocol, hostname } = window.location;
+            const socketUrl = `${protocol}//${hostname}:20262`;
+            console.log('Connecting to Chat Socket at:', socketUrl);
+
+            socketRef.current = io(socketUrl, {
                 auth: {
                     userId: user?.id || null
-                }
+                },
+                transports: ['websocket'],
+                reconnectionAttempts: 5
+            });
+
+            socketRef.current.on('connect', () => {
+                console.log('Connected to Chat Socket ✅');
+            });
+
+            socketRef.current.on('connect_error', (err) => {
+                console.error('Chat Socket Connection Error ❌:', err.message);
             });
 
             socketRef.current.on('init_messages', (history: Message[]) => {
@@ -94,6 +107,18 @@ export const ChatWidget: React.FC = () => {
         return email.split('@')[0];
     };
 
+    const formatDateTime = (dateString: string) => {
+        const date = new Date(dateString);
+        const d = date.toLocaleDateString('en-GB');
+        const t = date.toLocaleTimeString('en-GB', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+        });
+        return `${d} ${t}`;
+    };
+
     const getAvatarColor = (email?: string) => {
         const colors = [
             '#ef4444', '#f59e0b', '#10b981', '#3b82f6', '#6366f1', '#8b5cf6', '#ec4899'
@@ -151,6 +176,9 @@ export const ChatWidget: React.FC = () => {
                                                 style={{ color: getAvatarColor(msg.user?.email) }}
                                             >
                                                 {getUsername(msg.user?.email)}
+                                            </span>
+                                            <span className="yt-timestamp">
+                                                {formatDateTime(msg.createdAt)}
                                             </span>
                                             <span className="yt-text">
                                                 {renderMessageContent(msg.content)}
