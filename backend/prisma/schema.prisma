@@ -9,15 +9,15 @@ datasource db {
 }
 
 model User {
-  id         String      @id @default(uuid())
-  googleId   String      @unique
-  email      String      @unique
-  name       String
-  role       Role        @default(USER)
-  createdAt  DateTime    @default(now())
-  donations  Donation[]
-  mudikEntries MudikEntry[]
+  id           String        @id @default(uuid())
+  googleId     String        @unique
+  email        String        @unique
+  name         String
+  role         Role          @default(USER)
+  createdAt    DateTime      @default(now())
   chatMessages ChatMessage[]
+  donations    Donation[]
+  mudikEntries MudikEntry[]
 }
 
 model ChatMessage {
